@@ -1,10 +1,12 @@
 # API Contract: Lost & Found Website
 
 RISTEK Fasilkom UI Open Class Web Development 2026, Final Project.
+- Frontend: Joaquin Mulia Rahardjo, Wong Athena
+- Backend: Rifqy Amanullah Hermawan
 
 Dokumen ini berisi perjanjian antara Backend dan Frontend. Semua nama field, nilai enum, dan bentuk respons di sini bersifat **baku**. Perubahan harus disepakati bersama dan dicatat pada bagian Riwayat Perubahan.
 
-- Versi dokumen: 1.0 (Checkpoint 1)
+- Versi dokumen: 1.1
 - Base URL lokal: `http://localhost:3000`
 - Base URL produksi: akan diumumkan setelah deployment
 - Format data: JSON (`Content-Type: application/json`), kecuali pengiriman foto (lihat bagian 6)
@@ -47,57 +49,75 @@ Bentuk satu laporan pada respons:
 }
 ```
 
-| Field | Tipe JSON | Boleh `null`? | Keterangan |
-|-------|-----------|---------------|------------|
-| `id` | number (integer) | Tidak | Penanda unik, dibuat server |
-| `type` | string (enum) | Tidak | `LOST` atau `FOUND` |
-| `itemName` | string | Tidak | Nama barang |
-| `description` | string | **Ya** | Ciri-ciri barang; `null` jika tidak diisi |
-| `category` | string (enum) | Tidak | Lihat bagian 3 |
-| `location` | string | Tidak | Teks bebas |
-| `date` | string (ISO 8601, UTC) | Tidak | Tanggal barang hilang/ditemukan |
-| `imageUrl` | string (URL) | **Ya** | `null` jika tanpa foto, maka FE menampilkan placeholder |
-| `reporterName` | string | Tidak | Nama pelapor |
-| `contactType` | string (enum) | Tidak | Metode kontak yang dipilih pelapor |
-| `contactValue` | string | Tidak | Isi kontak sesuai `contactType` |
-| `status` | string (enum) | Tidak | `ACTIVE` atau `RESOLVED` |
-| `createdAt` | string (ISO 8601, UTC) | Tidak | Waktu laporan dibuat |
+| Field          | Tipe JSON              | Boleh `null`?                                 | Keterangan                                              |
+| -------------- | ---------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `id`           | number (integer)       | Tidak                                         | Penanda unik, dibuat server                             |
+| `type`         | string (enum)          | Tidak                                         | `LOST` atau `FOUND`                                     |
+| `itemName`     | string                 | Tidak                                         | Nama barang                                             |
+| `description`  | string                 | **Ya**, dengan syarat (lihat aturan di bawah) | Ciri-ciri barang; `null` jika tidak diisi               |
+| `category`     | string (enum)          | Tidak                                         | Lihat bagian 3                                          |
+| `location`     | string                 | Tidak                                         | Teks bebas                                              |
+| `date`         | string (ISO 8601, UTC) | Tidak                                         | Tanggal barang hilang/ditemukan                         |
+| `imageUrl`     | string (URL)           | **Ya**, dengan syarat (lihat aturan di bawah) | `null` jika tanpa foto, maka FE menampilkan placeholder |
+| `reporterName` | string                 | Tidak                                         | Nama pelapor                                            |
+| `contactType`  | string (enum)          | Tidak                                         | Metode kontak yang dipilih pelapor                      |
+| `contactValue` | string                 | Tidak                                         | Isi kontak sesuai `contactType`                         |
+| `status`       | string (enum)          | Tidak                                         | `ACTIVE` atau `RESOLVED`                                |
+| `createdAt`    | string (ISO 8601, UTC) | Tidak                                         | Waktu laporan dibuat                                    |
 
 ### Aturan privasi kontak
 
 Respons **hanya** memuat satu metode kontak, yaitu pasangan `contactType` dan `contactValue` yang dipilih pelapor. Tidak ada field kontak lain yang pernah dikirim ke publik.
 
+### Aturan minimal satu terisi: `description` atau `imageUrl`
+
+Setiap laporan harus memiliki **minimal salah satu** dari `description` atau `imageUrl`. Keduanya tidak boleh `null` secara bersamaan.
+
+|`description`|`imageUrl`|Valid?|
+|---|---|---|
+|terisi|`null`|Ya|
+|`null`|terisi|Ya|
+|terisi|terisi|Ya|
+|`null`|`null`|**Tidak** (ditolak dengan status 400)|
+
+Catatan:
+
+- `description` yang hanya berisi spasi dianggap kosong.
+- Karena pada **Checkpoint 2** unggah foto belum didukung, `description` **wajib diisi**. Mulai **Checkpoint 3**, `description` boleh kosong asalkan foto diunggah.
+- Aturan ini dijaga oleh validasi di backend, bukan oleh tipe kolom database (kedua kolom tetap boleh `null` secara individual).
+
 ### Aturan untuk Frontend
 
-- Jika `imageUrl` bernilai `null`, tampilkan gambar placeholder bawaan.
-- Jika `description` bernilai `null`, sembunyikan bagian deskripsi atau tampilkan teks pengganti seperti "Tidak ada deskripsi".
+- Jika `imageUrl` bernilai `null`, tampilkan gambar placeholder bawaan (pasti ada `description`).
+- Jika `description` bernilai `null`, sembunyikan bagian deskripsi (pasti ada foto).
+- Pada form pengiriman, tampilkan pesan kesalahan jika pengguna tidak mengisi deskripsi dan tidak memilih foto. Server tetap memvalidasi ulang.
 - Tampilkan `date` dan `createdAt` dalam zona waktu lokal pengguna (WIB), karena server mengirim UTC.
 
 ---
 
 ## 3. Nilai Enum
 
-| Enum | Nilai yang valid |
-|------|------------------|
-| `type` | `LOST`, `FOUND` |
-| `category` | `ELECTRONIC`, `DOCUMENT_CARD`, `TUMBLER`, `ACCESSORIES`, `ATK`, `OTHER` |
-| `contactType` | `WHATSAPP`, `LINE`, `INSTAGRAM`, `EMAIL` |
-| `status` | `ACTIVE`, `RESOLVED` |
+| Enum          | Nilai yang valid                                                             |
+| ------------- | ---------------------------------------------------------------------------- |
+| `type`        | `LOST`, `FOUND`                                                              |
+| `category`    | `ELECTRONIC`, `DOCUMENT_CARD`, `TUMBLER`, `ACCESSORY`, `STATIONERY`, `OTHER` |
+| `contactType` | `WHATSAPP`, `LINE`, `INSTAGRAM`, `EMAIL`                                     |
+| `status`      | `ACTIVE`, `RESOLVED`                                                         |
 
 Nilai enum **peka huruf besar/kecil** dan harus ditulis persis seperti di atas.
 
 Pemetaan tampilan kategori di UI:
 
-| Tampilan UI | Nilai API |
-|-------------|-----------|
-| Electronic | `ELECTRONIC` |
-| Dokumen & Card | `DOCUMENT_CARD` |
-| Tumbler | `TUMBLER` |
-| Accessories | `ACCESSORIES` |
-| ATK | `ATK` |
-| Other | `OTHER` |
+| Tampilan UI     | Nilai API       |
+| --------------- | --------------- |
+| Electronic      | `ELECTRONIC`    |
+| Dokument & Card | `DOCUMENT_CARD` |
+| Tumbler         | `TUMBLER`       |
+| Accessory       | `ACCESSORY`     |
+| Stationery      | `STATIONERY`    |
+| Other           | `OTHER`         |
 
-Pemetaan tampilan metode kontak yang disarankan: `WHATSAPP` tampil sebagai "WhatsApp", `LINE` sebagai "LINE", `INSTAGRAM` sebagai "Instagram", `EMAIL` sebagai "Email".
+Pemetaan tampilan metode kontak: `WHATSAPP` tampil sebagai "WhatsApp", `LINE` sebagai "LINE", `INSTAGRAM` sebagai "Instagram", `EMAIL` sebagai "Email".
 
 ---
 
@@ -144,7 +164,7 @@ Pemetaan tampilan metode kontak yang disarankan: `WHATSAPP` tampil sebagai "What
   "message": "Validasi gagal",
   "errors": [
     { "field": "itemName", "message": "itemName wajib diisi" },
-    { "field": "category", "message": "category harus salah satu dari: ELECTRONIC, DOCUMENT_CARD, TUMBLER, ACCESSORIES, ATK, OTHER" }
+    { "field": "category", "message": "category harus salah satu dari: ELECTRONIC, DOCUMENT_CARD, TUMBLER, ACCESSORIES, STATIONERY, OTHER" }
   ]
 }
 ```
@@ -308,18 +328,19 @@ Pada Checkpoint 3, server tetap menerima `application/json` untuk laporan tanpa 
 
 #### Field request
 
-| Field | Wajib | Aturan validasi |
-|-------|-------|-----------------|
-| `type` | Ya | `LOST` atau `FOUND` |
-| `itemName` | Ya | 3 sampai 100 karakter setelah spasi di awal/akhir dibuang |
-| `description` | Tidak | Maksimum 500 karakter; string kosong disimpan sebagai `null` |
-| `category` | Ya | Salah satu dari 6 enum |
-| `location` | Ya | 2 sampai 100 karakter |
-| `date` | Ya | Format `YYYY-MM-DD` atau ISO 8601 lengkap; harus tanggal valid dan **tidak di masa depan** |
-| `reporterName` | Ya | 2 sampai 100 karakter |
-| `contactType` | Ya | Salah satu dari 4 enum |
-| `contactValue` | Ya | 1 sampai 100 karakter; jika `contactType` = `EMAIL`, harus berformat email yang valid |
-| `image` | Tidak | Hanya Checkpoint 3. Lihat bagian 6 |
+| Field          | Wajib       | Aturan validasi                                                                                                              |
+| -------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `type`         | Ya          | `LOST` atau `FOUND`                                                                                                          |
+| `itemName`     | Ya          | 3 sampai 100 karakter setelah spasi di awal/akhir dibuang                                                                    |
+| `description`  | Kondisional | Maksimum 500 karakter; string kosong atau hanya spasi disimpan sebagai `null`. **Wajib diisi jika tidak ada foto** (`image`) |
+| `category`     | Ya          | Salah satu dari 6 enum                                                                                                       |
+| `location`     | Ya          | 2 sampai 100 karakter                                                                                                        |
+| `date`         | Ya          | Format `YYYY-MM-DD` atau ISO 8601 lengkap; harus tanggal valid dan **tidak di masa depan**                                   |
+| `reporterName` | Ya          | 2 sampai 100 karakter                                                                                                        |
+| `contactType`  | Ya          | Salah satu dari 4 enum                                                                                                       |
+| `contactValue` | Ya          | 1 sampai 100 karakter; jika `contactType` = `EMAIL`, harus berformat email yang valid                                        |
+| `image`        | Kondisional | Hanya Checkpoint 3. Lihat bagian 6. **Wajib diunggah jika `description` kosong**                                             |
+Aturan silang: minimal salah satu dari `description` atau `image` harus terisi (lihat bagian 2). Pada Checkpoint 2, karena foto belum didukung, `description` wajib diisi.
 
 Field yang **diabaikan server** jika dikirim klien: `id`, `status`, `createdAt`, `imageUrl`. Server selalu mengisinya sendiri (`status` = `ACTIVE`).
 
@@ -336,7 +357,7 @@ Content-Type: application/json
   "itemName": "KTM atas nama Ani",
   "description": "Ditemukan di dekat mesin fotokopi",
   "category": "DOCUMENT_CARD",
-  "location": "Perpustakaan Lantai 1",
+  "location": "Stulo Lantai 1",
   "date": "2026-11-12",
   "reporterName": "Citra",
   "contactType": "LINE",
@@ -357,7 +378,7 @@ Content-Type: application/json
     "itemName": "KTM atas nama Ani",
     "description": "Ditemukan di dekat mesin fotokopi",
     "category": "DOCUMENT_CARD",
-    "location": "Perpustakaan Lantai 1",
+    "location": "Stulo Lantai 1",
     "date": "2026-11-12T00:00:00.000Z",
     "imageUrl": null,
     "reporterName": "Citra",
@@ -393,7 +414,7 @@ Contoh respons 400:
 
 ---
 
-## 6. Pengiriman Foto (Checkpoint 3)
+## 6. Pengiriman Foto
 
 ### 6.1 Format
 
@@ -471,7 +492,7 @@ Rute yang tidak dikenal (misalnya `GET /abc`) dan method yang tidak disediakan (
 
 ## 8. CORS
 
-Backend mengizinkan permintaan lintas origin dari alamat frontend. Pada pengembangan lokal, origin Vite bawaan `http://localhost:5173` diizinkan. Setelah frontend dideploy, alamat produksinya perlu diberikan kepada Backend agar ditambahkan ke daftar origin yang diizinkan.
+Backend mengizinkan permintaan lintas origin dari alamat frontend. Pada pengembangan lokal, origin Vite bawaan `http://localhost:5173` diizinkan. Setelah frontend dideploy, alamat produksinya harus diberikan kepada Backend agar ditambahkan ke daftar origin yang diizinkan.
 
 ---
 
@@ -508,24 +529,15 @@ File `mockReports.json` berisi 10 laporan yang mengikuti kontrak ini. Backend me
 - Seluruh 6 kategori tercakup
 - Seluruh 4 metode kontak tercakup
 - 4 laporan tanpa foto (`imageUrl: null`) untuk menguji placeholder
-- Semua berstatus `ACTIVE`
+- 1 laporan tanpa deskripsi (`description: null`, tetapi `imageUrl` terisi)
+- 8 laporan `ACTIVE` dan 2 laporan `RESOLVED` (id 2 bertipe `LOST`, id 6 bertipe `FOUND`)
 
 URL gambar pada data sampel adalah contoh dan bukan foto asli.
 
 ---
+## 11. Riwayat Perubahan
 
-## 11. FE Tolong Konfirmasi Apakah sudah sesuai
-
-- [ ] Format respons (bagian 4) sudah sesuai kebutuhan FE
-- [ ] Nilai enum dan pemetaan tampilan kategori (bagian 3)
-- [ ] Batas panjang field pada form (bagian 5.4)
-- [ ] Teks bebas untuk lokasi, filter memakai pencarian "mengandung kata"
-- [ ] Alamat origin frontend untuk CORS `http://localhost:5173`?
-
----
-
-## 12. Riwayat Perubahan
-
-| Versi | Tanggal | Perubahan |
-|-------|---------|-----------|
-| 1.0 | 15 November 2026 | Draf awal Checkpoint 1 |
+| Versi | Tanggal          | Perubahan                                                                                                                                                                                                 |
+| ----- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0   | 15 November 2026 | Draf awal Checkpoint 1                                                                                                                                                                                    |
+| 1.1   | 16 November 2026 | Kategori `ATK` diganti `STATIONERY` dan `ACCESSORIES` diganti `ACCESSORY`; label UI menjadi Stationery, Accessory, dan Document & Card; `description` dan `imageUrl` kini harus terisi minimal salah satu |
