@@ -51,10 +51,7 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 
 1. **Public Report Listing & Details**: semua laporan aktif tampil publik, tiap laporan punya halaman detail.
 2. **Report Submission**: form laporan Lost / Found.
-
-### Fitur opsional
-
-- **Search & Filtering**: cari berdasarkan nama barang; filter tipe (Lost/Found), kategori, dan lokasi. Sudah tercakup di API contract (`GET /reports`).
+3. **Search & Filtering**: cari berdasarkan nama barang; filter tipe (Lost/Found), kategori, dan lokasi. Sudah tercakup di API contract (`GET /reports`).
 
 ## 5. Desain Database
 
@@ -270,7 +267,7 @@ Alur upload (Checkpoint 3):
 3. Backend membaca form dengan `multer`, memvalidasi teks dan file, lalu mengunggah ke **Cloudinary**.
 4. URL aman (`https`) disimpan di kolom `imageUrl`; tanpa foto nilainya `null`.
 5. Jika `description` kosong, foto wajib diunggah.
-6. Jika `imageUrl` bernilai `null`, Frontend menampilkan placeholder default (opsional) atau menyembunyikan gambar.
+6. Jika `imageUrl` bernilai `null`, Frontend menampilkan placeholder default.
 
 
 ## 8. Mock Data
