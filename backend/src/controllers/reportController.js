@@ -1,20 +1,16 @@
-const {
-    REPORT_TYPES,
-    CATEGORIES,
-    MAX_LIMIT
-} = require("../constants");
-
+const { REPORT_TYPES, CATEGORIES, MAX_LIMIT } = require("../constants");
 
 const {
-    getAllReports,
-    findReportById
+  getAllReports,
+  findReportById,
+  addReport,
 } = require("../store/reportStore");
 
+const { validateReportInput } = require("../validators/reportValidator");
 
 function toSearchText(value) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
-
 
 function getReports(req, res) {
   const { search, type, category, location } = req.query;
@@ -35,7 +31,6 @@ function getReports(req, res) {
     });
   }
 
-
   const limit = Math.min(requestedLimit, MAX_LIMIT);
 
   if (type && !REPORT_TYPES.includes(type)) {
@@ -52,8 +47,9 @@ function getReports(req, res) {
     });
   }
 
-
-  let filteredReports = getAllReports().filter((report) => report.status === "ACTIVE");
+  let filteredReports = getAllReports().filter(
+    (report) => report.status === "ACTIVE",
+  );
 
   const searchText = toSearchText(search);
   if (searchText) {
@@ -105,7 +101,6 @@ function getReportById(req, res) {
   const idParam = req.params.id;
   const id = Number(idParam);
 
-
   if (!/^[1-9]\d*$/.test(idParam) || !Number.isSafeInteger(id)) {
     return res.status(400).json({
       success: false,
@@ -128,7 +123,27 @@ function getReportById(req, res) {
   });
 }
 
+function createReport(req, res) {
+  const { errors, data } = validateReportInput(req.body);
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Validasi gagal",
+      errors,
+    });
+  }
+
+  const newReport = addReport(data);
+
+  res.status(201).json({
+    success: true,
+    data: newReport,
+  });
+}
+
 module.exports = {
-    getReports,
-    getReportById
+  getReports,
+  getReportById,
+  createReport,
 };
