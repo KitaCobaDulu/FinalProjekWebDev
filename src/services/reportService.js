@@ -55,3 +55,56 @@ export async function getReports({
     },
   };
 }
+
+// ===== Checkpoint 2:
+const USE_MOCK = true; // ubah ke false untuk memakai backend asli
+const BASE_URL = 'http://localhost:3000';
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function getReportById(id) {
+  // Kontrak: id harus bilangan bulat positif
+  if (!/^[1-9]\d*$/.test(String(id))) {
+    return { success: false, message: 'ID laporan tidak valid' };
+  }
+
+  if (USE_MOCK) {
+    await delay(300);
+    const found = mockReports.find((report) => report.id === Number(id));
+    if (!found) return { success: false, message: 'Laporan tidak ditemukan' };
+    return { success: true, data: found }; // laporan RESOLVED tetap bisa dibuka
+  }
+
+  const res = await fetch(`${BASE_URL}/reports/${id}`);
+  return res.json(); // backend membalas { success, data } atau { success: false, message }
+}
+
+export async function createReport(payload) {
+  if (USE_MOCK) {
+    await delay(300);
+    const newReport = {
+      id: Math.max(0, ...mockReports.map((report) => report.id)) + 1,
+      type: payload.type,
+      itemName: payload.itemName,
+      description: payload.description || null,
+      category: payload.category,
+      location: payload.location,
+      date: new Date(payload.date).toISOString(),
+      imageUrl: null,
+      reporterName: payload.reporterName,
+      contactType: payload.contactType,
+      contactValue: payload.contactValue,
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+    };
+    mockReports.unshift(newReport); // hanya di memori, hilang saat halaman di-refresh
+    return { success: true, data: newReport };
+  }
+
+  const res = await fetch(`${BASE_URL}/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return res.json();
+}
