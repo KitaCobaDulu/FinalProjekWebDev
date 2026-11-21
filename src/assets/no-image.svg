@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#e2e8f0"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="12" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="240" y="110" width="160" height="120" rx="12"/>
+    <circle cx="285" cy="150" r="14"/>
+    <path d="M250 215 L300 170 L340 205 L370 180 L395 215"/>
+  </g>
+  <text x="320" y="285" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#64748b">Tidak ada foto</text>
+</svg>
