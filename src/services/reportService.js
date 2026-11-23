@@ -1,67 +1,79 @@
 import mockReports from '../data/mockReports.json';
 
+// <--- PERUBAHAN CP3 (1): Pindahkan ke atas, matikan mock, dan baca URL dari .env
+const USE_MOCK = false;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// ===== BAGIAN FE 1: Daftar Laporan (GET /reports) =====
 export async function getReports({
   search = '',
   type = '',
   category = '',
   location = '',
   page = 1,
-  limit = 10,
+  limit = 6,
 } = {}) {
-  // 1. Ambil hanya yang statusnya ACTIVE dan urutkan dari yang paling baru
-  let filtered = mockReports
-    .filter((report) => report.status === 'ACTIVE')
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  // Logika mock data lama tetap disimpan di sini sebagai cadangan jika USE_MOCK = true
+  if (USE_MOCK) {
+    let filtered = mockReports
+      .filter((report) => report.status === 'ACTIVE')
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  // 2. Filter berdasarkan kata kunci nama barang (tidak peduli huruf besar/kecil)
-  if (search) {
-    filtered = filtered.filter((report) =>
-      report.itemName.toLowerCase().includes(search.toLowerCase())
-    );
+    if (search) {
+      filtered = filtered.filter((report) =>
+        report.itemName.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    if (type) {
+      filtered = filtered.filter((report) => report.type === type);
+    }
+    if (category) {
+      filtered = filtered.filter((report) => report.category === category);
+    }
+    if (location) {
+      filtered = filtered.filter((report) =>
+        report.location.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const paginatedData = filtered.slice(startIndex, startIndex + limit);
+
+    return {
+      success: true,
+      data: paginatedData,
+      pagination: {
+        page,
+        limit,
+        totalItems,
+        totalPages,
+      },
+    };
   }
 
-  // 3. Filter berdasarkan tipe laporan (LOST / FOUND)
-  if (type) {
-    filtered = filtered.filter((report) => report.type === type);
+  // <--- PERUBAHAN CP3 (2): Ambil data langsung dari API Backend asli
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  if (type) params.append('type', type);
+  if (category) params.append('category', category);
+  if (location) params.append('location', location);
+  params.append('page', page);
+  params.append('limit', limit);
+
+  const response = await fetch(`${BASE_URL}/reports?${params.toString()}`);
+
+  if (!response.ok) {
+    throw new Error(`Gagal memuat data dari server (Status: ${response.status})`);
   }
 
-  // 4. Filter berdasarkan kategori
-  if (category) {
-    filtered = filtered.filter((report) => report.category === category);
-  }
-
-  // 5. Filter berdasarkan lokasi
-  if (location) {
-    filtered = filtered.filter((report) =>
-      report.location.toLowerCase().includes(location.toLowerCase())
-    );
-  }
-
-  // 6. Hitung pembagian halaman (pagination)
-  const totalItems = filtered.length;
-  const totalPages = Math.ceil(totalItems / limit);
-  const startIndex = (page - 1) * limit;
-  const paginatedData = filtered.slice(startIndex, startIndex + limit);
-
-  // 7. Kembalikan format JSON yang identik dengan API Contract
-  return {
-    success: true,
-    data: paginatedData,
-    pagination: {
-      page,
-      limit,
-      totalItems,
-      totalPages,
-    },
-  };
+  return await response.json();
 }
 
-// ===== Checkpoint 2:
-const USE_MOCK = true; // ubah ke false untuk memakai backend asli
-const BASE_URL = 'http://localhost:3000';
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
+// ===== BAGIAN FE 2: Detail & Buat Laporan (Tetap sama seperti CP2) =====
 export async function getReportById(id) {
   // Kontrak: id harus bilangan bulat positif
   if (!/^[1-9]\d*$/.test(String(id))) {
@@ -72,11 +84,11 @@ export async function getReportById(id) {
     await delay(300);
     const found = mockReports.find((report) => report.id === Number(id));
     if (!found) return { success: false, message: 'Laporan tidak ditemukan' };
-    return { success: true, data: found }; // laporan RESOLVED tetap bisa dibuka
+    return { success: true, data: found };
   }
 
   const res = await fetch(`${BASE_URL}/reports/${id}`);
-  return res.json(); // backend membalas { success, data } atau { success: false, message }
+  return res.json();
 }
 
 export async function createReport(payload) {
@@ -97,7 +109,7 @@ export async function createReport(payload) {
       status: 'ACTIVE',
       createdAt: new Date().toISOString(),
     };
-    mockReports.unshift(newReport); // hanya di memori, hilang saat halaman di-refresh
+    mockReports.unshift(newReport);
     return { success: true, data: newReport };
   }
 

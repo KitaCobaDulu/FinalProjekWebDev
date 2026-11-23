@@ -3,7 +3,6 @@ import { getReports } from '../services/reportService';
 import FilterBar from '../components/FilterBar';
 import ReportCard from '../components/ReportCard';
 
-// Nilai awal filter 
 const INITIAL_FILTERS = {
   search: '',
   type: '',
@@ -23,38 +22,59 @@ export default function HomePage() {
   });
   const [filters, setFilters] = useState(INITIAL_FILTERS);
 
-  // Setiap kali isi 'filters' berubah, ambil ulang data yang sesuai
+  // State baru untuk Checkpoint 3: Loading dan Error
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     async function loadReports() {
-      const response = await getReports(filters);
-      if (response.success) {
-        setReports(response.data);
-        setPagination(response.pagination);
+      setIsLoading(true); // Mulai loading sebelum request dikirim
+      setError(null);     // Bersihkan pesan error sebelumnya
+
+      try {
+        const response = await getReports(filters);
+        if (response.success) {
+          setReports(response.data);
+          setPagination(response.pagination);
+        } else {
+          setError(response.message || 'Terjadi kesalahan saat mengambil data.');
+        }
+      } catch (err) {
+        console.error('Error fetch reports:', err);
+        setError('Tidak dapat terhubung ke server. Pastikan server Backend aktif atau coba beberapa saat lagi.');
+      } finally {
+        setIsLoading(false); // Hentikan loading baik berhasil maupun gagal
       }
     }
+
     loadReports();
   }, [filters]);
 
-  // Fungsi saat user mengetik search atau memilih dropdown filter
   const handleFilterChange = (newValues) => {
     setFilters((prev) => ({
       ...prev,
       ...newValues,
-      page: 1, // Wajib reset ke halaman 1 setiap kali filter berubah
+      page: 1,
     }));
   };
 
-  // Fungsi saat tombol Reset diklik
   const handleResetFilters = () => {
     setFilters(INITIAL_FILTERS);
+  };
+
+  // Fungsi untuk mencoba mengambil data ulang saat terjadi error
+  const handleRetry = () => {
+    setFilters((prev) => ({ ...prev }));
   };
 
   return (
     <div>
       <h1>Daftar Barang Hilang & Ditemukan</h1>
-      <p style={{ color: '#64748b', marginTop: '0.25rem' }}>
-        Menampilkan {reports.length} dari {pagination.totalItems} laporan aktif
-      </p>
+      {!isLoading && !error && (
+        <p style={{ color: '#64748b', marginTop: '0.25rem' }}>
+          Menampilkan {reports.length} dari {pagination.totalItems} laporan aktif
+        </p>
+      )}
 
       {/* Bar Pencarian & Filter */}
       <FilterBar
@@ -63,8 +83,44 @@ export default function HomePage() {
         onReset={handleResetFilters}
       />
 
-      {/* Daftar Kartu Laporan atau Pesan Kosong */}
-      {reports.length === 0 ? (
+      {/* Kondisi 1: Sedang Loading */}
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#475569' }}>
+          <p style={{ fontWeight: '600', fontSize: '1.05rem' }}>
+            ⏳ Sedang memuat daftar laporan...
+          </p>
+        </div>
+      ) : error ? (
+        /* Kondisi 2: Terjadi Error */
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '2rem 1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            color: '#991b1b',
+          }}
+        >
+          <p style={{ fontWeight: '600', marginBottom: '0.75rem' }}>{error}</p>
+          <button
+            type="button"
+            onClick={handleRetry}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: '#dc2626',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontWeight: '600',
+            }}
+          >
+            Coba Lagi
+          </button>
+        </div>
+      ) : reports.length === 0 ? (
+        /* Kondisi 3: Berhasil, tapi data kosong */
         <div
           style={{
             textAlign: 'center',
@@ -82,6 +138,7 @@ export default function HomePage() {
           </p>
         </div>
       ) : (
+        /* Kondisi 4: Berhasil dan ada data */
         <div className="report-grid">
           {reports.map((report) => (
             <ReportCard key={report.id} report={report} />
@@ -89,8 +146,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Kontrol Pagination (Muncul jika halaman lebih dari 1) */}
-      {pagination.totalPages > 1 && (
+      {/* Kontrol Pagination */}
+      {!isLoading && !error && pagination.totalPages > 1 && (
         <div className="pagination">
           <button
             disabled={filters.page <= 1}
