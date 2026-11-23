@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -14,8 +15,8 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 ## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
+# If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
 # FoundIT Website
 
 Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan penemu barang bisa saling terhubung lewat laporan publik, tanpa bergantung pada chat grup WhatsApp.
@@ -27,28 +28,28 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 
 ## 1. Tim
 
-| Nama | Role | Tanggung jawab |
-|---|---|---|
-| Joaquin Mulia Rahardjo | Frontend | ... |
-| Wong Athena | Frontend | ... |
-| Rifqy Amanullah Hermawan | Backend | ... |
+| Nama                     | Role     | Tanggung jawab |
+| ------------------------ | -------- | -------------- |
+| Joaquin Mulia Rahardjo   | Frontend | ...            |
+| Wong Athena              | Frontend | ...            |
+| Rifqy Amanullah Hermawan | Backend  | ...            |
 
 ## 2. Tech Stack
 
-| Komponen | Teknologi |
-|---|---|
-| Frontend | HTML, CSS, JavaScript, React.js, Vite |
-| Backend | JavaScript, Node.js, Express.js |
-| Database | PostgreSQL |
-| ORM | Prisma ORM |
-| Image Storage | Cloudinary |
-| Version Control | GitHub |
+| Komponen        | Teknologi                             |
+| --------------- | ------------------------------------- |
+| Frontend        | HTML, CSS, JavaScript, React.js, Vite |
+| Backend         | JavaScript, Node.js, Express.js       |
+| Database        | PostgreSQL                            |
+| ORM             | Prisma ORM                            |
+| Image Storage   | Cloudinary                            |
+| Version Control | GitHub                                |
 
 ## 3. Repository & Setup Lokal
 
-| Bagian | Repo |
-|---|---|
-| Backend | ... |
+| Bagian  | Repo |
+| ------- | ---- |
+| Backend | ...  |
 
 ### Backend
 
@@ -58,12 +59,12 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 
 ### Halaman
 
-| Halaman | Route | Deskripsi |
-|---|---|---|
-| Home / Listing | `/` | Daftar laporan Lost & Found, search, filter, pagination |
-| Detail Laporan | `/reports/:id` | Detail lengkap satu laporan + kontak publik |
-| Buat Laporan | `/reports/new` | Form laporan Lost / Found + upload foto opsional |
-| Not Found | `*` | Halaman 404 |
+| Halaman        | Route          | Deskripsi                                               |
+| -------------- | -------------- | ------------------------------------------------------- |
+| Home / Listing | `/`            | Daftar laporan Lost & Found, search, filter, pagination |
+| Detail Laporan | `/reports/:id` | Detail lengkap satu laporan + kontak publik             |
+| Buat Laporan   | `/reports/new` | Form laporan Lost / Found + upload foto opsional        |
+| Not Found      | `*`            | Halaman 404                                             |
 
 ### Fitur wajib
 
@@ -75,21 +76,21 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 
 ### Tabel `Report`
 
-| Field | Tipe | Boleh null | Keterangan |
-|---|---|---|---|
-| `id` | Int (auto increment) | Tidak | Primary key, dibuat server |
-| `type` | Enum `LOST`, `FOUND` | Tidak | Jenis laporan |
-| `itemName` | String | Tidak | Nama barang (3-100 karakter) |
-| `description` | String | Ya* | Ciri-ciri barang (maks 500 karakter) |
-| `category` | Enum | Tidak | `ELECTRONIC`, `DOCUMENT_CARD`, `TUMBLER`, `ACCESSORY`, `STATIONERY`, `OTHER` |
-| `location` | String | Tidak | Lokasi hilang/ditemukan (2-100 karakter) |
-| `date` | DateTime (UTC) | Tidak | Tanggal barang hilang/ditemukan, tidak boleh di masa depan |
-| `imageUrl` | String | Ya* | URL gambar Cloudinary |
-| `reporterName` | String | Tidak | Nama pelapor (2-100 karakter) |
-| `contactType` | Enum | Tidak | `WHATSAPP`, `LINE`, `INSTAGRAM`, `EMAIL` |
-| `contactValue` | String | Tidak | Isi kontak sesuai `contactType` (email harus valid) |
-| `status` | Enum `ACTIVE`, `RESOLVED` | Tidak | Default `ACTIVE` |
-| `createdAt` | DateTime (UTC) | Tidak | Otomatis saat dibuat |
+| Field          | Tipe                      | Boleh null | Keterangan                                                                   |
+| -------------- | ------------------------- | ---------- | ---------------------------------------------------------------------------- |
+| `id`           | Int (auto increment)      | Tidak      | Primary key, dibuat server                                                   |
+| `type`         | Enum `LOST`, `FOUND`      | Tidak      | Jenis laporan                                                                |
+| `itemName`     | String                    | Tidak      | Nama barang (3-100 karakter)                                                 |
+| `description`  | String                    | Ya\*       | Ciri-ciri barang (maks 500 karakter)                                         |
+| `category`     | Enum                      | Tidak      | `ELECTRONIC`, `DOCUMENT_CARD`, `TUMBLER`, `ACCESSORY`, `STATIONERY`, `OTHER` |
+| `location`     | String                    | Tidak      | Lokasi hilang/ditemukan (2-100 karakter)                                     |
+| `date`         | DateTime (UTC)            | Tidak      | Tanggal barang hilang/ditemukan, tidak boleh di masa depan                   |
+| `imageUrl`     | String                    | Ya\*       | URL gambar Cloudinary                                                        |
+| `reporterName` | String                    | Tidak      | Nama pelapor (2-100 karakter)                                                |
+| `contactType`  | Enum                      | Tidak      | `WHATSAPP`, `LINE`, `INSTAGRAM`, `EMAIL`                                     |
+| `contactValue` | String                    | Tidak      | Isi kontak sesuai `contactType` (email harus valid)                          |
+| `status`       | Enum `ACTIVE`, `RESOLVED` | Tidak      | Default `ACTIVE`                                                             |
+| `createdAt`    | DateTime (UTC)            | Tidak      | Otomatis saat dibuat                                                         |
 
 \* `description` dan `imageUrl` tidak boleh `null` bersamaan. Minimal salah satu harus terisi.
 
@@ -148,31 +149,31 @@ model Report {
 Dokumen lengkap (baku, versi 1.1): **[docs/API_CONTRACT.md](./docs/API_CONTRACT.md)**. Berikut ringkasannya.
 
 - Base URL lokal: `http://localhost:3000`
-- Base URL produksi: [...?]
+- Base URL produksi: `https://final-projek-web-dev.vercel.app`
 - Format: JSON, kecuali upload foto (`multipart/form-data`)
 - Tanpa autentikasi. Tidak ada endpoint `PUT`/`PATCH`/`DELETE`, sehingga publik tidak bisa mengubah atau menghapus laporan.
 
 ### Endpoint
 
-| Method | Path | Fungsi | Sukses | Tersedia sejak |
-|---|---|---|---|---|
-| GET | `/` | Cek server berjalan | 200 | Checkpoint 2 |
-| GET | `/reports` | Daftar laporan (search, filter, pagination) | 200 | Checkpoint 2 |
-| GET | `/reports/:id` | Detail satu laporan | 200 | Checkpoint 2 |
-| POST | `/reports` | Kirim laporan baru | 201 | Checkpoint 2 (teks), Checkpoint 3 (foto) |
+| Method | Path           | Fungsi                                      | Sukses | Tersedia sejak                           |
+| ------ | -------------- | ------------------------------------------- | ------ | ---------------------------------------- |
+| GET    | `/`            | Cek server berjalan                         | 200    | Checkpoint 2                             |
+| GET    | `/reports`     | Daftar laporan (search, filter, pagination) | 200    | Checkpoint 2                             |
+| GET    | `/reports/:id` | Detail satu laporan                         | 200    | Checkpoint 2                             |
+| POST   | `/reports`     | Kirim laporan baru                          | 201    | Checkpoint 2 (teks), Checkpoint 3 (foto) |
 
 ### Query parameter `GET /reports`
 
 Semua opsional dan bisa digabung (logika AND).
 
-| Parameter | Tipe | Default | Aturan |
-|---|---|---|---|
-| `search` | string | - | Cari pada `itemName`, mengandung kata, tidak peka huruf besar/kecil |
-| `type` | enum | - | `LOST` atau `FOUND` |
-| `category` | enum | - | Salah satu dari 6 kategori |
-| `location` | string | - | Mengandung kata, tidak peka huruf besar/kecil |
-| `page` | integer | `1` | Minimum 1 |
-| `limit` | integer | `10` | Minimum 1, maksimum 50 |
+| Parameter  | Tipe    | Default | Aturan                                                              |
+| ---------- | ------- | ------- | ------------------------------------------------------------------- |
+| `search`   | string  | -       | Cari pada `itemName`, mengandung kata, tidak peka huruf besar/kecil |
+| `type`     | enum    | -       | `LOST` atau `FOUND`                                                 |
+| `category` | enum    | -       | Salah satu dari 6 kategori                                          |
+| `location` | string  | -       | Mengandung kata, tidak peka huruf besar/kecil                       |
+| `page`     | integer | `1`     | Minimum 1                                                           |
+| `limit`    | integer | `10`    | Minimum 1, maksimum 50                                              |
 
 ### Perilaku pagination
 
@@ -188,7 +189,7 @@ Contoh: `GET /reports?type=LOST&category=TUMBLER&search=biru&page=1&limit=10`
 Sukses (satu data):
 
 ```json
-{ "success": true, "data": { } }
+{ "success": true, "data": {} }
 ```
 
 Sukses (daftar):
@@ -196,7 +197,7 @@ Sukses (daftar):
 ```json
 {
   "success": true,
-  "data": [ ],
+  "data": [],
   "pagination": { "page": 1, "limit": 10, "totalItems": 10, "totalPages": 1 }
 }
 ```
@@ -213,9 +214,7 @@ Error validasi (400 pada `POST /reports`):
 {
   "success": false,
   "message": "Validasi gagal",
-  "errors": [
-    { "field": "itemName", "message": "itemName wajib diisi" }
-  ]
+  "errors": [{ "field": "itemName", "message": "itemName wajib diisi" }]
 }
 ```
 
@@ -259,13 +258,13 @@ Response `201 Created` berisi objek laporan lengkap. Server mengisi sendiri `id`
 
 ### Status code
 
-| Kode | Arti | Dipakai ketika |
-|---|---|---|
-| 200 | OK | Pengambilan data berhasil |
-| 201 | Created | Laporan berhasil dibuat |
-| 400 | Bad Request | Input atau parameter tidak valid |
-| 404 | Not Found | Laporan atau rute tidak ada |
-| 500 | Internal Server Error | Kesalahan tak terduga di server |
+| Kode | Arti                  | Dipakai ketika                   |
+| ---- | --------------------- | -------------------------------- |
+| 200  | OK                    | Pengambilan data berhasil        |
+| 201  | Created               | Laporan berhasil dibuat          |
+| 400  | Bad Request           | Input atau parameter tidak valid |
+| 404  | Not Found             | Laporan atau rute tidak ada      |
+| 500  | Internal Server Error | Kesalahan tak terduga di server  |
 
 ### Privasi kontak
 
@@ -273,10 +272,10 @@ Response hanya memuat satu pasangan `contactType` + `contactValue`, yaitu kontak
 
 ## 7. Format Pengiriman Laporan & Upload Foto
 
-| Tahap | Content-Type | Foto |
-|---|---|---|
-| Checkpoint 2 | `application/json` | ... |
-| Checkpoint 3 | `multipart/form-data` |... |
+| Tahap        | Content-Type          | Foto |
+| ------------ | --------------------- | ---- |
+| Checkpoint 2 | `application/json`    | ...  |
+| Checkpoint 3 | `multipart/form-data` | ...  |
 
 Alur upload (Checkpoint 3):
 
@@ -286,7 +285,6 @@ Alur upload (Checkpoint 3):
 4. URL aman (`https`) disimpan di kolom `imageUrl`; tanpa foto nilainya `null`.
 5. Jika `description` kosong, foto wajib diunggah.
 6. Jika `imageUrl` bernilai `null`, Frontend menampilkan placeholder default.
-
 
 ## 8. Mock Data
 
@@ -301,13 +299,14 @@ File `mockReports.json` berisi 10 laporan yang mengikuti kontrak API. Backend me
 
 ## 9. Rencana Pengerjaan
 
-| Checkpoint | Deadline | Frontend | Backend |
-|---|---|---|---|
-| 1: Project Preparation | 16 Nov 2026 | README, rencana halaman | API contract, mock data, desain DB, rencana Prisma |
-| 2: Main UI & Working API | 19 Nov 2026 | Listing, detail, search/filter, form, responsive (pakai mock) | `GET /reports`, `GET /reports/:id`, `POST /reports` (in-memory), deploy + CORS |
-| 3: Full Integration & Deployment | 22 Nov 2026 | Integrasi API, upload foto, validasi, loading/error state, deploy FE | Prisma + PostgreSQL, migrasi, Cloudinary, validasi, deploy BE |
+| Checkpoint                       | Deadline    | Frontend                                                             | Backend                                                                        |
+| -------------------------------- | ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1: Project Preparation           | 16 Nov 2026 | README, rencana halaman                                              | API contract, mock data, desain DB, rencana Prisma                             |
+| 2: Main UI & Working API         | 19 Nov 2026 | Listing, detail, search/filter, form, responsive (pakai mock)        | `GET /reports`, `GET /reports/:id`, `POST /reports` (in-memory), deploy + CORS |
+| 3: Full Integration & Deployment | 22 Nov 2026 | Integrasi API, upload foto, validasi, loading/error state, deploy FE | Prisma + PostgreSQL, migrasi, Cloudinary, validasi, deploy BE                  |
 
 ## 10. Riwayat Dokumen
 
 Perubahan kontrak API dicatat di bagian Riwayat Perubahan pada [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) (versi saat ini: 1.1).
->>>>>>> d93271b6519c9fda82a744d6e6a9876d243a57d4
+
+> > > > > > > d93271b6519c9fda82a744d6e6a9876d243a57d4
