@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+=======
 # FoundIT Website
 
 Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan penemu barang bisa saling terhubung lewat laporan publik, tanpa bergantung pada chat grup WhatsApp.
@@ -292,3 +310,4 @@ File `mockReports.json` berisi 10 laporan yang mengikuti kontrak API. Backend me
 ## 10. Riwayat Dokumen
 
 Perubahan kontrak API dicatat di bagian Riwayat Perubahan pada [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) (versi saat ini: 1.1).
+>>>>>>> d93271b6519c9fda82a744d6e6a9876d243a57d4

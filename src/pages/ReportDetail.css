@@ -1,0 +1,32 @@
+.rd-container {
+  max-width: 720px;
+  margin: 24px auto;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-align: left; /* template Vite memusatkan teks, kita kembalikan ke kiri */
+}
+.rd-back { display: inline-block; margin-bottom: 16px; }
+.rd-img { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-bottom: 16px; }
+.rd-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.rd-badge { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.rd-badge--lost { background: #fee2e2; color: #b91c1c; }
+.rd-badge--found { background: #dcfce7; color: #15803d; }
+.rd-badge--category { background: #e2e8f0; color: #334155; }
+.rd-badge--resolved { background: #fef3c7; color: #b45309; }
+.rd-title { margin: 12px 0; font-size: 28px; }
+.rd-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 16px 0; }
+.rd-info dt { font-size: 13px; color: #64748b; }
+.rd-info dd { margin: 2px 0 0; font-weight: 600; }
+.rd-info a { word-break: break-all; }
+.rd-subtitle { font-size: 18px; margin: 24px 0 8px; }
+.rd-desc { line-height: 1.6; white-space: pre-line; }
+.rd-status { text-align: center; padding: 48px 16px; }
+
+@media (max-width: 600px) {
+  .rd-container { margin: 12px; padding: 16px; }
+  .rd-title { font-size: 22px; }
+}

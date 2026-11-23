@@ -1,0 +1,44 @@
+.cr-container {
+  max-width: 600px;
+  margin: 24px auto;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #fff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  text-align: left;
+}
+.cr-title { margin: 8px 0 16px; }
+.cr-form { display: flex; flex-direction: column; gap: 16px; }
+.cr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cr-field { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 14px; }
+.cr-field input, .cr-field select, .cr-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font: inherit;
+  font-weight: 400;
+  font-size: 16px;
+}
+.cr-form button {
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.cr-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+.cr-error { color: #dc2626; font-size: 13px; font-weight: 400; }
+
+@media (max-width: 600px) {
+  .cr-container { margin: 12px; padding: 16px; }
+  .cr-row { grid-template-columns: 1fr; }
+  .cr-form button { width: 100%; }
+}
