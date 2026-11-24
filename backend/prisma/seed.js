@@ -1,18 +1,8 @@
-require("dotenv").config();
-
 const fs = require("fs");
 const path = require("path");
-const { PrismaClient } = require("@prisma/client");
-const { PrismaPg } = require("@prisma/adapter-pg");
-
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+const prisma = require("../src/config/prisma");
 
 async function main() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL belum diisi");
-  }
-
   const reportsPath = path.resolve(__dirname, "../src/data/mockReports.json");
   const mockReports = JSON.parse(fs.readFileSync(reportsPath, "utf8"));
 
