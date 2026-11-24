@@ -11,10 +11,10 @@ const CATEGORIES = [
 const MAX_LIMIT = 50;
 
 const CONTACT_TYPES = [
-    "WHATSAPP",
-    "LINE",
-    "INSTAGRAM",
-    "EMAIL"
+  "WHATSAPP",
+  "LINE",
+  "INSTAGRAM",
+  "EMAIL"
 ];
 
 module.exports = {
