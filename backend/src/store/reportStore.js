@@ -54,6 +54,7 @@ async function addReport(data) {
       category: data.category,
       location: data.location,
       date: new Date(data.date),
+      imageUrl: data.imageUrl ?? null,
       reporterName: data.reporterName,
       contactType: data.contactType,
       contactValue: data.contactValue,

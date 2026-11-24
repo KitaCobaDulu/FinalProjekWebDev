@@ -7,6 +7,7 @@ const {
 } = require("../store/reportStore");
 
 const { validateReportInput } = require("../validators/reportValidator");
+const { uploadImageBuffer } = require("../utils/cloudinaryUpload");
 
 function toTrimmedText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -105,7 +106,7 @@ async function getReportById(req, res) {
 }
 
 async function createReport(req, res) {
-  const { errors, data } = validateReportInput(req.body);
+  const { errors, data } = validateReportInput(req.body, Boolean(req.file));
 
   if (errors.length > 0) {
     return res.status(400).json({
@@ -115,7 +116,28 @@ async function createReport(req, res) {
     });
   }
 
-  const newReport = await addReport(data);
+  let imageUrl = null;
+
+  if (req.file) {
+    try {
+      const result = await uploadImageBuffer(req.file.buffer);
+      imageUrl = result.secure_url;
+    } catch (error) {
+      if (error.http_code === 400) {
+        return res.status(400).json({
+          success: false,
+          message: "Validasi gagal",
+          errors: [
+            { field: "image", message: "File bukan gambar yang valid" },
+          ],
+        });
+      }
+
+      throw error;
+    }
+  }
+
+  const newReport = await addReport({ ...data, imageUrl });
 
   res.status(201).json({
     success: true,
