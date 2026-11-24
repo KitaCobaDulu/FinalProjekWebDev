@@ -1,3 +1,10 @@
 node_modules
 .env
 .prettierrc
+/src/generated/prisma
+
+# Berkas bantu alat AI (dibuat otomatis saat pemasangan Prisma)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
