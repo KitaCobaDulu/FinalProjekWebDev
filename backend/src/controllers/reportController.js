@@ -1,18 +1,19 @@
-const { REPORT_TYPES, CATEGORIES, MAX_LIMIT } = require("../constants");
+const { REPORT_TYPES, CATEGORIES, MAX_LIMIT, MAX_REPORT_ID } = require("../constants");
 
 const {
-  getAllReports,
+  findActiveReports,
   findReportById,
   addReport,
 } = require("../store/reportStore");
 
 const { validateReportInput } = require("../validators/reportValidator");
+const { uploadImageBuffer } = require("../utils/cloudinaryUpload");
 
-function toSearchText(value) {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
+function toTrimmedText(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-function getReports(req, res) {
+async function getReports(req, res) {
   const { search, type, category, location } = req.query;
   const page = Number(req.query.page || 1);
   const requestedLimit = Number(req.query.limit || 10);
@@ -47,43 +48,16 @@ function getReports(req, res) {
     });
   }
 
-  let filteredReports = getAllReports().filter(
-    (report) => report.status === "ACTIVE",
-  );
+  const { data, totalItems } = await findActiveReports({
+    search: toTrimmedText(search),
+    type,
+    category,
+    location: toTrimmedText(location),
+    page,
+    limit,
+  });
 
-  const searchText = toSearchText(search);
-  if (searchText) {
-    filteredReports = filteredReports.filter((report) =>
-      report.itemName.toLowerCase().includes(searchText),
-    );
-  }
-
-  if (type) {
-    filteredReports = filteredReports.filter((report) => report.type === type);
-  }
-
-  if (category) {
-    filteredReports = filteredReports.filter(
-      (report) => report.category === category,
-    );
-  }
-
-  const locationText = toSearchText(location);
-  if (locationText) {
-    filteredReports = filteredReports.filter((report) =>
-      report.location.toLowerCase().includes(locationText),
-    );
-  }
-
-  filteredReports.sort(
-    (firstReport, secondReport) =>
-      new Date(secondReport.createdAt) - new Date(firstReport.createdAt),
-  );
-
-  const totalItems = filteredReports.length;
   const totalPages = Math.ceil(totalItems / limit);
-  const startIndex = (page - 1) * limit;
-  const data = filteredReports.slice(startIndex, startIndex + limit);
 
   res.json({
     success: true,
@@ -97,7 +71,7 @@ function getReports(req, res) {
   });
 }
 
-function getReportById(req, res) {
+async function getReportById(req, res) {
   const idParam = req.params.id;
   const id = Number(idParam);
 
@@ -108,7 +82,15 @@ function getReportById(req, res) {
     });
   }
 
-  const report = findReportById(id);
+  // Angka sebesar ini pasti tidak ada di database (kolom id bertipe Int)
+  if (id > MAX_REPORT_ID) {
+    return res.status(404).json({
+      success: false,
+      message: "Laporan tidak ditemukan",
+    });
+  }
+
+  const report = await findReportById(id);
 
   if (!report) {
     return res.status(404).json({
@@ -123,8 +105,8 @@ function getReportById(req, res) {
   });
 }
 
-function createReport(req, res) {
-  const { errors, data } = validateReportInput(req.body);
+async function createReport(req, res) {
+  const { errors, data } = validateReportInput(req.body, Boolean(req.file));
 
   if (errors.length > 0) {
     return res.status(400).json({
@@ -134,7 +116,28 @@ function createReport(req, res) {
     });
   }
 
-  const newReport = addReport(data);
+  let imageUrl = null;
+
+  if (req.file) {
+    try {
+      const result = await uploadImageBuffer(req.file.buffer);
+      imageUrl = result.secure_url;
+    } catch (error) {
+      if (error.http_code === 400) {
+        return res.status(400).json({
+          success: false,
+          message: "Validasi gagal",
+          errors: [
+            { field: "image", message: "File bukan gambar yang valid" },
+          ],
+        });
+      }
+
+      throw error;
+    }
+  }
+
+  const newReport = await addReport({ ...data, imageUrl });
 
   res.status(201).json({
     success: true,

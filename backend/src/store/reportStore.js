@@ -1,39 +1,69 @@
-const mockReports = require("../data/mockReports.json");
+const prisma = require("../config/prisma");
 
-const reports = [...mockReports];
+async function findActiveReports(filters) {
+  const { search, type, category, location, page, limit } = filters;
+  const where = { status: "ACTIVE" };
 
-function getAllReports() {
-  return reports;
+  if (search) {
+    where.itemName = {
+      contains: search,
+      mode: "insensitive",
+    };
+  }
+
+  if (type) {
+    where.type = type;
+  }
+
+  if (category) {
+    where.category = category;
+  }
+
+  if (location) {
+    where.location = {
+      contains: location,
+      mode: "insensitive",
+    };
+  }
+
+  const [data, totalItems] = await Promise.all([
+    prisma.report.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.report.count({ where }),
+  ]);
+
+  return { data, totalItems };
 }
 
-function findReportById(id) {
-  return reports.find((item) => item.id === id);
+async function findReportById(id) {
+  return prisma.report.findUnique({
+    where: { id },
+  });
 }
 
-function addReport(data) {
-  // TODO 1:
-  const newId =
-    reports.length > 0 ? Math.max(...reports.map((item) => item.id)) + 1 : 1;
-
-  // TODO 2:
-  const newReport = {
-    id: newId,
-    ...data,
-    imageUrl: null,
-    status: "ACTIVE",
-    createdAt: new Date().toISOString(),
-  };
-
-  // TODO 3:
-  reports.push(newReport);
-
-  // TODO 4:
-  return newReport;
+async function addReport(data) {
+  return prisma.report.create({
+    data: {
+      type: data.type,
+      itemName: data.itemName,
+      description: data.description ?? null,
+      category: data.category,
+      location: data.location,
+      date: new Date(data.date),
+      imageUrl: data.imageUrl ?? null,
+      reporterName: data.reporterName,
+      contactType: data.contactType,
+      contactValue: data.contactValue,
+    },
+  });
 }
 
-// TODO 5:
 module.exports = {
-  getAllReports,
+  findActiveReports,
   findReportById,
   addReport,
 };

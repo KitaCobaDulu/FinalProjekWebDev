@@ -39,7 +39,7 @@ function isFutureDate(rawValue, date) {
   return date > new Date();
 }
 
-function validateReportInput(body) {
+function validateReportInput(body, hasImage = false) {
   const input = body || {};
   const errors = [];
 
@@ -71,9 +71,7 @@ function validateReportInput(body) {
   checkOneOf("type", input.type, REPORT_TYPES);
   checkRequiredLength("itemName", itemName, 3, 100);
 
-  // Checkpoint 2: foto belum didukung, jadi deskripsi wajib.
-  // Checkpoint 3: syaratnya menjadi "deskripsi kosong DAN tidak ada foto".
-  if (!description) {
+  if (!description && !hasImage) {
     addError("description", "Isi deskripsi atau unggah foto (minimal salah satu)");
   } else if (description.length > 500) {
     addError("description", "description maksimal 500 karakter");
@@ -111,7 +109,7 @@ function validateReportInput(body) {
     data: {
       type: input.type,
       itemName,
-      description: description || null, // null jika kosong (foto menyusul di Checkpoint 3)
+      description: description || null,
       category: input.category,
       location,
       date: parsedDate.toISOString(),
