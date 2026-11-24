@@ -1,14 +1,15 @@
 # API Contract: Lost & Found Website
 
 RISTEK Fasilkom UI Open Class Web Development 2026, Final Project.
+
 - Frontend: Joaquin Mulia Rahardjo, Wong Athena
 - Backend: Rifqy Amanullah Hermawan
 
 Dokumen ini berisi perjanjian antara Backend dan Frontend. Semua nama field, nilai enum, dan bentuk respons di sini bersifat **baku**. Perubahan harus disepakati bersama dan dicatat pada bagian Riwayat Perubahan.
 
-- Versi dokumen: 1.1
+- Versi dokumen: 1.2
 - Base URL lokal: `http://localhost:3000`
-- Base URL produksi: akan diumumkan setelah deployment
+- Base URL produksi: `https://final-projek-web-dev.vercel.app`
 - Format data: JSON (`Content-Type: application/json`), kecuali pengiriman foto (lihat bagian 6)
 - Autentikasi: tidak ada, semua endpoint publik
 
@@ -16,12 +17,12 @@ Dokumen ini berisi perjanjian antara Backend dan Frontend. Semua nama field, nil
 
 ## 1. Ringkasan Endpoint
 
-| Method | Path | Fungsi | Status sukses | Tersedia sejak |
-|--------|------|--------|---------------|----------------|
-| GET | `/` | Cek server berjalan | 200 | Checkpoint 2 |
-| GET | `/reports` | Daftar laporan (search, filter, pagination) | 200 | Checkpoint 2 |
-| GET | `/reports/:id` | Detail satu laporan | 200 | Checkpoint 2 |
-| POST | `/reports` | Kirim laporan baru | 201 | Checkpoint 2 (teks), Checkpoint 3 (foto) |
+| Method | Path           | Fungsi                                      | Status sukses | Tersedia sejak                           |
+| ------ | -------------- | ------------------------------------------- | ------------- | ---------------------------------------- |
+| GET    | `/`            | Cek server berjalan                         | 200           | Checkpoint 2                             |
+| GET    | `/reports`     | Daftar laporan (search, filter, pagination) | 200           | Checkpoint 2                             |
+| GET    | `/reports/:id` | Detail satu laporan                         | 200           | Checkpoint 2                             |
+| POST   | `/reports`     | Kirim laporan baru                          | 201           | Checkpoint 2 (teks), Checkpoint 3 (foto) |
 
 Endpoint `PUT`, `PATCH`, dan `DELETE` **sengaja tidak disediakan** agar publik tidak dapat mengubah atau menghapus laporan.
 
@@ -73,12 +74,12 @@ Respons **hanya** memuat satu metode kontak, yaitu pasangan `contactType` dan `c
 
 Setiap laporan harus memiliki **minimal salah satu** dari `description` atau `imageUrl`. Keduanya tidak boleh `null` secara bersamaan.
 
-|`description`|`imageUrl`|Valid?|
-|---|---|---|
-|terisi|`null`|Ya|
-|`null`|terisi|Ya|
-|terisi|terisi|Ya|
-|`null`|`null`|**Tidak** (ditolak dengan status 400)|
+| `description` | `imageUrl` | Valid?                                |
+| ------------- | ---------- | ------------------------------------- |
+| terisi        | `null`     | Ya                                    |
+| `null`        | terisi     | Ya                                    |
+| terisi        | terisi     | Ya                                    |
+| `null`        | `null`     | **Tidak** (ditolak dengan status 400) |
 
 Catatan:
 
@@ -128,7 +129,7 @@ Pemetaan tampilan metode kontak: `WHATSAPP` tampil sebagai "WhatsApp", `LINE` se
 ```json
 {
   "success": true,
-  "data": { }
+  "data": {}
 }
 ```
 
@@ -137,7 +138,7 @@ Pemetaan tampilan metode kontak: `WHATSAPP` tampil sebagai "WhatsApp", `LINE` se
 ```json
 {
   "success": true,
-  "data": [ ],
+  "data": [],
   "pagination": {
     "page": 1,
     "limit": 10,
@@ -164,7 +165,10 @@ Pemetaan tampilan metode kontak: `WHATSAPP` tampil sebagai "WhatsApp", `LINE` se
   "message": "Validasi gagal",
   "errors": [
     { "field": "itemName", "message": "itemName wajib diisi" },
-    { "field": "category", "message": "category harus salah satu dari: ELECTRONIC, DOCUMENT_CARD, TUMBLER, ACCESSORIES, STATIONERY, OTHER" }
+    {
+      "field": "category",
+      "message": "category harus salah satu dari: ELECTRONIC, DOCUMENT_CARD, TUMBLER, ACCESSORIES, STATIONERY, OTHER"
+    }
   ]
 }
 ```
@@ -182,7 +186,7 @@ Cek kesehatan server.
 Respons 200:
 
 ```json
-{ "message": "Lost & Found API berjalan" }
+{ "message": "Foundit API berjalan" }
 ```
 
 (Endpoint ini satu-satunya yang tidak memakai format `success/data`.)
@@ -255,12 +259,12 @@ GET /reports?type=LOST&category=TUMBLER&search=biru&page=1&limit=10
 
 #### Respons error
 
-| Status | Kondisi | Contoh `message` |
-|--------|---------|------------------|
-| 400 | `type` bukan `LOST`/`FOUND` | `Parameter type harus LOST atau FOUND` |
-| 400 | `category` bukan salah satu enum | `Parameter category tidak valid` |
-| 400 | `page` atau `limit` bukan bilangan bulat positif | `Parameter page harus bilangan bulat positif` |
-| 500 | Kesalahan server | `Terjadi kesalahan pada server` |
+| Status | Kondisi                                          | Contoh `message`                              |
+| ------ | ------------------------------------------------ | --------------------------------------------- |
+| 400    | `type` bukan `LOST`/`FOUND`                      | `Parameter type harus LOST atau FOUND`        |
+| 400    | `category` bukan salah satu enum                 | `Parameter category tidak valid`              |
+| 400    | `page` atau `limit` bukan bilangan bulat positif | `Parameter page harus bilangan bulat positif` |
+| 500    | Kesalahan server                                 | `Terjadi kesalahan pada server`               |
 
 ---
 
@@ -268,9 +272,9 @@ GET /reports?type=LOST&category=TUMBLER&search=biru&page=1&limit=10
 
 Mengambil detail satu laporan.
 
-| Parameter path | Tipe | Aturan |
-|----------------|------|--------|
-| `id` | integer | Bilangan bulat positif |
+| Parameter path | Tipe    | Aturan                 |
+| -------------- | ------- | ---------------------- |
+| `id`           | integer | Bilangan bulat positif |
 
 #### Contoh request
 
@@ -303,11 +307,11 @@ GET /reports/4
 
 #### Respons error
 
-| Status | Kondisi | `message` |
-|--------|---------|-----------|
-| 400 | `id` bukan bilangan bulat positif (contoh: `/reports/abc`) | `ID laporan tidak valid` |
-| 404 | Tidak ada laporan dengan id tersebut | `Laporan tidak ditemukan` |
-| 500 | Kesalahan server | `Terjadi kesalahan pada server` |
+| Status | Kondisi                                                    | `message`                       |
+| ------ | ---------------------------------------------------------- | ------------------------------- |
+| 400    | `id` bukan bilangan bulat positif (contoh: `/reports/abc`) | `ID laporan tidak valid`        |
+| 404    | Tidak ada laporan dengan id tersebut                       | `Laporan tidak ditemukan`       |
+| 500    | Kesalahan server                                           | `Terjadi kesalahan pada server` |
 
 Catatan: laporan berstatus `RESOLVED` tetap dapat dibuka lewat detail (tidak 404), tetapi tidak muncul di daftar.
 
@@ -319,9 +323,9 @@ Mengirim laporan baru.
 
 #### Format pengiriman
 
-| Tahap | Content-Type | Foto |
-|-------|--------------|------|
-| Checkpoint 2 | `application/json` | Belum didukung |
+| Tahap        | Content-Type          | Foto                    |
+| ------------ | --------------------- | ----------------------- |
+| Checkpoint 2 | `application/json`    | Belum didukung          |
 | Checkpoint 3 | `multipart/form-data` | Opsional, field `image` |
 
 Pada Checkpoint 3, server tetap menerima `application/json` untuk laporan tanpa foto, dan `multipart/form-data` untuk laporan dengan atau tanpa foto. Rincian di bagian 6.
@@ -340,6 +344,7 @@ Pada Checkpoint 3, server tetap menerima `application/json` untuk laporan tanpa 
 | `contactType`  | Ya          | Salah satu dari 4 enum                                                                                                       |
 | `contactValue` | Ya          | 1 sampai 100 karakter; jika `contactType` = `EMAIL`, harus berformat email yang valid                                        |
 | `image`        | Kondisional | Hanya Checkpoint 3. Lihat bagian 6. **Wajib diunggah jika `description` kosong**                                             |
+
 Aturan silang: minimal salah satu dari `description` atau `image` harus terisi (lihat bagian 2). Pada Checkpoint 2, karena foto belum didukung, `description` wajib diisi.
 
 Field yang **diabaikan server** jika dikirim klien: `id`, `status`, `createdAt`, `imageUrl`. Server selalu mengisinya sendiri (`status` = `ACTIVE`).
@@ -392,12 +397,12 @@ Content-Type: application/json
 
 #### Respons error
 
-| Status | Kondisi | Keterangan |
-|--------|---------|------------|
-| 400 | Satu atau lebih field tidak lolos validasi | Memakai format error validasi (bagian 4.4), semua kesalahan dikembalikan sekaligus |
-| 400 | Body bukan JSON yang valid | `message`: `Format request tidak valid` |
-| 400 | Foto tidak valid (Checkpoint 3) | Format error validasi dengan `field: "image"` |
-| 500 | Kesalahan server atau gagal mengunggah foto | `Terjadi kesalahan pada server` |
+| Status | Kondisi                                     | Keterangan                                                                         |
+| ------ | ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 400    | Satu atau lebih field tidak lolos validasi  | Memakai format error validasi (bagian 4.4), semua kesalahan dikembalikan sekaligus |
+| 400    | Body bukan JSON yang valid                  | `message`: `Format request tidak valid`                                            |
+| 400    | Foto tidak valid (Checkpoint 3)             | Format error validasi dengan `field: "image"`                                      |
+| 500    | Kesalahan server atau gagal mengunggah foto | `Terjadi kesalahan pada server`                                                    |
 
 Contoh respons 400:
 
@@ -407,7 +412,10 @@ Contoh respons 400:
   "message": "Validasi gagal",
   "errors": [
     { "field": "itemName", "message": "itemName wajib diisi" },
-    { "field": "contactValue", "message": "contactValue harus berupa email yang valid" }
+    {
+      "field": "contactValue",
+      "message": "contactValue harus berupa email yang valid"
+    }
   ]
 }
 ```
@@ -427,11 +435,11 @@ Contoh respons 400:
 
 ### 6.2 Aturan file
 
-| Aturan | Nilai |
-|--------|-------|
+| Aturan               | Nilai                                   |
+| -------------------- | --------------------------------------- |
 | Format yang diterima | `image/jpeg`, `image/png`, `image/webp` |
-| Ukuran maksimum | 2 MB |
-| Jumlah file | 1 |
+| Ukuran maksimum      | 2 MB                                    |
+| Jumlah file          | 1                                       |
 
 ### 6.3 Alur di server
 
@@ -471,13 +479,13 @@ Validasi ukuran dan format file di sisi klien sebelum mengirim, agar pengguna me
 
 ## 7. Status Code
 
-| Kode | Arti | Dipakai ketika |
-|------|------|----------------|
-| 200 | OK | Pengambilan data berhasil |
-| 201 | Created | Laporan berhasil dibuat |
-| 400 | Bad Request | Input atau parameter tidak valid |
-| 404 | Not Found | Laporan tidak ada, atau rute tidak dikenal |
-| 500 | Internal Server Error | Kesalahan tak terduga di server |
+| Kode | Arti                  | Dipakai ketika                             |
+| ---- | --------------------- | ------------------------------------------ |
+| 200  | OK                    | Pengambilan data berhasil                  |
+| 201  | Created               | Laporan berhasil dibuat                    |
+| 400  | Bad Request           | Input atau parameter tidak valid           |
+| 404  | Not Found             | Laporan tidak ada, atau rute tidak dikenal |
+| 500  | Internal Server Error | Kesalahan tak terduga di server            |
 
 Rute yang tidak dikenal (misalnya `GET /abc`) dan method yang tidak disediakan (misalnya `DELETE /reports/1`) mengembalikan 404:
 
@@ -535,9 +543,11 @@ File `mockReports.json` berisi 10 laporan yang mengikuti kontrak ini. Backend me
 URL gambar pada data sampel adalah contoh dan bukan foto asli.
 
 ---
+
 ## 11. Riwayat Perubahan
 
 | Versi | Tanggal          | Perubahan                                                                                                                                                                                                 |
 | ----- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.0   | 15 November 2026 | Draf awal Checkpoint 1                                                                                                                                                                                    |
+| 1.0   | 15 November 2026 | Draf awal                                                                                                                                                                                                 |
 | 1.1   | 16 November 2026 | Kategori `ATK` diganti `STATIONERY` dan `ACCESSORIES` diganti `ACCESSORY`; label UI menjadi Stationery, Accessory, dan Document & Card; `description` dan `imageUrl` kini harus terisi minimal salah satu |
+| 1.2   | 23 November 2026 | Base URL produksi dicantumkan                                                                                                                                                                             |
