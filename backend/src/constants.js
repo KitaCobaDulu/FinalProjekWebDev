@@ -17,9 +17,12 @@ const CONTACT_TYPES = [
   "EMAIL"
 ];
 
+const MAX_REPORT_ID = 2147483647; // batas tipe Int PostgreSQL pada kolom id
+
 module.exports = {
   REPORT_TYPES,
   CATEGORIES,
   MAX_LIMIT,
-  CONTACT_TYPES
+  CONTACT_TYPES,
+  MAX_REPORT_ID
 };
