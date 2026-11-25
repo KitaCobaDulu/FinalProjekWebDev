@@ -71,12 +71,13 @@ https://found-it-iota-liart.vercel.app/
 | Homepage | Detail |
 |---|---|
 | <img width="959" height="500" alt="Screenshot 2026-11-25 131219" src="https://github.com/user-attachments/assets/38fcde51-c649-4b7b-82ce-f4ba2d2326bd" />
-| <img width="959" height="482" alt="Screenshot 2026-11-25 131301" src="https://github.com/user-attachments/assets/94b36f5b-1f59-4cec-8542-424245bb5ce2" /> |
+| <img width="959" height="482" alt="Screenshot 2026-11-25 131301" src="https://github.com/user-attachments/assets/94b36f5b-1f59-4cec-8542-424245bb5ce2" /> 
+|
 
 | Form Buat Laporan |
 |---|
-| ![Form](<img width="959" height="470" alt="Screenshot 2026-11-25 131316" src="https://github.com/user-attachments/assets/bb47a6a2-3d3e-4b6e-ad13-067863afdced" />
-)
+| <img width="959" height="470" alt="Screenshot 2026-11-25 131316" src="https://github.com/user-attachments/assets/bb47a6a2-3d3e-4b6e-ad13-067863afdced" />
+|
 
 ## 5. Desain Database
 
