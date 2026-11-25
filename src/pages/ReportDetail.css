@@ -10,7 +10,7 @@
   text-align: left; /* template Vite memusatkan teks, kita kembalikan ke kiri */
 }
 .rd-back { display: inline-block; margin-bottom: 16px; }
-.rd-img { width: 100%; max-height: 360px; object-fit: cover; border-radius: 8px; margin-bottom: 16px; }
+.rd-img { width: 100%; max-height: 360px; object-fit: contain; border-radius: 8px; margin-bottom: 16px; }
 .rd-badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .rd-badge { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
 .rd-badge--lost { background: #fee2e2; color: #b91c1c; }
