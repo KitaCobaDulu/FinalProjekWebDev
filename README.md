@@ -24,6 +24,9 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 > RISTEK Fasilkom UI Open Class Web Development 2026 - Final Project
 > **Status: Checkpoint 1 (Project Preparation)**
 
+## Website Live
+https://found-it-iota-liart.vercel.app/
+
 ---
 
 ## 1. Tim
@@ -45,17 +48,7 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 | Image Storage   | Cloudinary                            |
 | Version Control | GitHub                                |
 
-## 3. Repository & Setup Lokal
-
-| Bagian  | Repo |
-| ------- | ---- |
-| Backend | ...  |
-
-### Backend
-
-[...]
-
-## 4. Halaman & Fitur
+## 3. Halaman & Fitur
 
 ### Halaman
 
@@ -66,11 +59,25 @@ Website Lost & Found untuk mahasiswa Fasilkom UI. Pemilik barang yang hilang dan
 | Buat Laporan   | `/reports/new` | Form laporan Lost / Found + upload foto opsional        |
 | Not Found      | `*`            | Halaman 404                                             |
 
-### Fitur wajib
+### Fitur
 
-1. **Public Report Listing & Details**: semua laporan aktif tampil publik, tiap laporan punya halaman detail.
-2. **Report Submission**: form laporan Lost / Found.
-3. **Search & Filtering**: cari berdasarkan nama barang; filter tipe (Lost/Found), kategori, dan lokasi. Sudah tercakup di API contract (`GET /reports`).
+## Fitur
+- Daftar laporan dengan pencarian, filter, dan pagination
+- Detail laporan dari GET /reports/:id
+- Buat laporan (POST /reports) dengan upload foto opsional (maks 2 MB, JPEG/PNG/WebP)
+- Validasi di sisi klien, loading state, dan pesan error dari backend
+
+## 4. Screenshot
+| Homepage | Detail |
+|---|---|
+| ![Daftar](<img width="959" height="500" alt="Screenshot 2026-11-25 131219" src="https://github.com/user-attachments/assets/38fcde51-c649-4b7b-82ce-f4ba2d2326bd" />
+) | ![Detail](<img width="959" height="482" alt="Screenshot 2026-11-25 131301" src="https://github.com/user-attachments/assets/94b36f5b-1f59-4cec-8542-424245bb5ce2" />
+) |
+
+| Form Buat Laporan | Error Validasi |
+|---|---|
+| ![Form](<img width="959" height="470" alt="Screenshot 2026-11-25 131316" src="https://github.com/user-attachments/assets/bb47a6a2-3d3e-4b6e-ad13-067863afdced" />
+) | ![Error]() |
 
 ## 5. Desain Database
 
