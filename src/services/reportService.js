@@ -1,6 +1,5 @@
 import mockReports from '../data/mockReports.json';
 
-// <--- PERUBAHAN CP3 (1): Pindahkan ke atas, matikan mock, dan baca URL dari .env
 const USE_MOCK = false;
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
@@ -15,7 +14,6 @@ export async function getReports({
   page = 1,
   limit = 6,
 } = {}) {
-  // Logika mock data lama tetap disimpan di sini sebagai cadangan jika USE_MOCK = true
   if (USE_MOCK) {
     let filtered = mockReports
       .filter((report) => report.status === 'ACTIVE')
@@ -26,12 +24,8 @@ export async function getReports({
         report.itemName.toLowerCase().includes(search.toLowerCase())
       );
     }
-    if (type) {
-      filtered = filtered.filter((report) => report.type === type);
-    }
-    if (category) {
-      filtered = filtered.filter((report) => report.category === category);
-    }
+    if (type) filtered = filtered.filter((report) => report.type === type);
+    if (category) filtered = filtered.filter((report) => report.category === category);
     if (location) {
       filtered = filtered.filter((report) =>
         report.location.toLowerCase().includes(location.toLowerCase())
@@ -46,16 +40,10 @@ export async function getReports({
     return {
       success: true,
       data: paginatedData,
-      pagination: {
-        page,
-        limit,
-        totalItems,
-        totalPages,
-      },
+      pagination: { page, limit, totalItems, totalPages },
     };
   }
 
-  // <--- PERUBAHAN CP3 (2): Ambil data langsung dari API Backend asli
   const params = new URLSearchParams();
   if (search) params.append('search', search);
   if (type) params.append('type', type);
@@ -73,7 +61,7 @@ export async function getReports({
   return await response.json();
 }
 
-// ===== BAGIAN FE 2: Detail & Buat Laporan (Tetap sama seperti CP2) =====
+// ===== BAGIAN FE 2: Detail & Buat Laporan =====
 export async function getReportById(id) {
   // Kontrak: id harus bilangan bulat positif
   if (!/^[1-9]\d*$/.test(String(id))) {
@@ -87,13 +75,17 @@ export async function getReportById(id) {
     return { success: true, data: found };
   }
 
+  // Backend membalas JSON juga untuk 400/404, jadi body-nya tetap dibaca
   const res = await fetch(`${BASE_URL}/reports/${id}`);
   return res.json();
 }
 
-export async function createReport(payload) {
+// formData: objek FormData (multipart/form-data), field foto bernama "image"
+export async function createReport(formData) {
   if (USE_MOCK) {
     await delay(300);
+    const payload = Object.fromEntries(formData.entries());
+    const image = formData.get('image');
     const newReport = {
       id: Math.max(0, ...mockReports.map((report) => report.id)) + 1,
       type: payload.type,
@@ -102,7 +94,7 @@ export async function createReport(payload) {
       category: payload.category,
       location: payload.location,
       date: new Date(payload.date).toISOString(),
-      imageUrl: null,
+      imageUrl: image instanceof File ? URL.createObjectURL(image) : null,
       reporterName: payload.reporterName,
       contactType: payload.contactType,
       contactValue: payload.contactValue,
@@ -113,10 +105,11 @@ export async function createReport(payload) {
     return { success: true, data: newReport };
   }
 
+  // PENTING: jangan set header Content-Type manual.
+  // Browser mengisinya sendiri lengkap dengan boundary multipart.
   const res = await fetch(`${BASE_URL}/reports`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: formData,
   });
   return res.json();
 }

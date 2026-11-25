@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createReport } from '../services/reportService';
 import { CATEGORY_OPTIONS, CONTACT_OPTIONS, CONTACT_PLACEHOLDERS } from '../constants/categories';
@@ -18,6 +18,10 @@ const INITIAL_FORM = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Sama dengan batas di backend (uploadImage.js)
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 // Tanggal hari ini menurut jam di laptop pengguna, format YYYY-MM-DD
 function getToday() {
   const d = new Date();
@@ -26,7 +30,7 @@ function getToday() {
 }
 
 // Aturan validasi mengikuti API Contract bagian 5.4
-function validate(form) {
+function validate(form, image) {
   const errors = {};
   const itemName = form.itemName.trim();
   const location = form.location.trim();
@@ -44,9 +48,20 @@ function validate(form) {
   if (!form.date) errors.date = 'Tanggal wajib diisi';
   else if (form.date > getToday()) errors.date = 'Tanggal tidak boleh di masa depan';
 
-  // Checkpoint 2: foto belum didukung, jadi deskripsi wajib diisi
-  if (!description) errors.description = 'Deskripsi wajib diisi';
-  else if (description.length > 500) errors.description = 'Deskripsi maksimal 500 karakter';
+  // Checkpoint 3: foto opsional, tapi deskripsi atau foto minimal salah satu
+  if (!description && !image) {
+    errors.description = 'Isi deskripsi atau unggah foto (minimal salah satu)';
+  } else if (description.length > 500) {
+    errors.description = 'Deskripsi maksimal 500 karakter';
+  }
+
+  if (image) {
+    if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
+      errors.image = 'Format foto harus JPEG, PNG, atau WebP';
+    } else if (image.size > MAX_IMAGE_SIZE) {
+      errors.image = 'Ukuran foto maksimal 2 MB';
+    }
+  }
 
   if (reporterName.length < 2 || reporterName.length > 100) {
     errors.reporterName = 'Nama pelapor harus 2 sampai 100 karakter';
@@ -73,9 +88,18 @@ function Field({ label, error, children }) {
 export default function CreateReport() {
   const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_FORM);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState('');
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
+
+  // Bersihkan URL pratinjau supaya tidak bocor memori
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,36 +111,45 @@ export default function CreateReport() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0] || null;
+    setImage(file);
+    setPreview(file ? URL.createObjectURL(file) : '');
+    setErrors((prev) => ({ ...prev, image: undefined }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const foundErrors = validate(form);
+    const foundErrors = validate(form, image);
     setErrors(foundErrors);
     if (Object.keys(foundErrors).length > 0) return;
 
-    // Field yang dikirim sesuai API Contract (id, status, createdAt, imageUrl diisi server)
-    const payload = {
-      type: form.type,
-      itemName: form.itemName.trim(),
-      description: form.description.trim(),
-      category: form.category,
-      location: form.location.trim(),
-      date: form.date, // format YYYY-MM-DD
-      reporterName: form.reporterName.trim(),
-      contactType: form.contactType,
-      contactValue: form.contactValue.trim(),
-    };
+    // Kirim sebagai multipart/form-data (id, status, createdAt, imageUrl diisi server)
+    const formData = new FormData();
+    formData.append('type', form.type);
+    formData.append('itemName', form.itemName.trim());
+    formData.append('description', form.description.trim());
+    formData.append('category', form.category);
+    formData.append('location', form.location.trim());
+    formData.append('date', form.date); // format YYYY-MM-DD
+    formData.append('reporterName', form.reporterName.trim());
+    formData.append('contactType', form.contactType);
+    formData.append('contactValue', form.contactValue.trim());
+    if (image) formData.append('image', image); // nama field sesuai backend
 
     setSubmitting(true);
     setServerError('');
     try {
-      const response = await createReport(payload);
+      const response = await createReport(formData);
       if (response.success) {
         navigate(`/reports/${response.data.id}`);
       } else {
         // Error validasi dari server: { errors: [{ field, message }] }
         if (Array.isArray(response.errors)) {
           const fieldErrors = {};
-          response.errors.forEach((err) => { fieldErrors[err.field] = err.message; });
+          response.errors.forEach((err) => {
+            fieldErrors[err.field] = err.message;
+          });
           setErrors(fieldErrors);
         }
         setServerError(response.message || 'Gagal mengirim laporan');
@@ -129,7 +162,7 @@ export default function CreateReport() {
   };
 
   return (
-    <main className="cr-container">
+    <div className="cr-container">
       <Link to="/">← Kembali ke daftar</Link>
       <h1 className="cr-title">Buat Laporan</h1>
 
@@ -177,6 +210,22 @@ export default function CreateReport() {
           />
         </Field>
 
+        <Field label="Foto (opsional, maks 2 MB)" error={errors.image}>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleImageChange}
+            disabled={submitting}
+          />
+          {preview && (
+            <img
+              src={preview}
+              alt="Pratinjau foto"
+              style={{ maxWidth: '100%', maxHeight: 200, marginTop: 8, objectFit: 'contain' }}
+            />
+          )}
+        </Field>
+
         <div className="cr-row">
           <Field label="Nama pelapor" error={errors.reporterName}>
             <input name="reporterName" maxLength={100} value={form.reporterName} onChange={handleChange} />
@@ -204,9 +253,9 @@ export default function CreateReport() {
         {serverError && <p className="cr-error">{serverError}</p>}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? 'Mengirim...' : 'Kirim Laporan'}
+          {submitting ? (image ? 'Mengunggah foto...' : 'Mengirim...') : 'Kirim Laporan'}
         </button>
       </form>
-    </main>
+    </div>
   );
 }
