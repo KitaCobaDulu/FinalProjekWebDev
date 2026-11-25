@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ReportType {
+  LOST
+  FOUND
+}
+
+enum Category {
+  ELECTRONIC
+  DOCUMENT_CARD
+  TUMBLER
+  ACCESSORY
+  STATIONERY
+  OTHER
+}
+
+enum ContactType {
+  WHATSAPP
+  LINE
+  INSTAGRAM
+  EMAIL
+}
+
+enum ReportStatus {
+  ACTIVE
+  RESOLVED
+}
+
+model Report {
+  id           Int          @id @default(autoincrement())
+  type         ReportType
+  itemName     String
+  description  String?
+  category     Category
+  location     String
+  date         DateTime
+  imageUrl     String?
+  reporterName String
+  contactType  ContactType
+  contactValue String
+  status       ReportStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([type])
+  @@index([category])
+}
